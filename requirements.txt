@@ -1,0 +1,9 @@
+asgiref==3.11.1
+dj-database-url==3.1.2
+Django==6.0.6
+django-environ==0.14.0
+psycopg==3.3.4
+psycopg-c==3.3.4
+psycopg-pool==3.3.1
+sqlparse==0.5.5
+typing_extensions==4.15.0
