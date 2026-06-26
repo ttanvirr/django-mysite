@@ -9,7 +9,7 @@ sudo apt update
 sudo apt install python3 python3-pip python3-venv
 ```
 
-## venv (virtual environment)
+## Create venv (virtual environment)
 
 - Create a venv inside the project directory
 
@@ -105,7 +105,7 @@ open wsl
 sudo -u postgres psql
 ```
 
-Enter password for sudo
+Enter password for `sudo`
 
 - Create db for an existing postgres user
 - (DON'T FORGET SEMICOLON FOR POSTGRES SHELL COMMANDS)
@@ -142,11 +142,14 @@ DATABASES = {
 
 - DELETE `db.sqlite3` file
 - Run migrate and runserver. See if everything is okay
+
 - For extra check, check if database tables (auth, etc.) are created.
 
 ```bash
-psql -U <db_user> -d mysite_db
+psql -U <db_user> -d <db_name>
 ```
+
+This tables are created based on INSTALLED_APPS listed in settings.py
 
 ### Environ variables
 
@@ -208,6 +211,64 @@ DATABASES = {
 
 - As initial setups have completed, do your first commit (optionally push to a github repo)
 
+## (Optional) TailwindCSS and DaisyUI setup for frontend (not for this project)
+
 <!-- ============================END INITIAL DJANGO SETUPS============================== -->
 
 # CREATING the Polls app
+
+- To create your app, make sure you’re in the same directory as manage.py and type this command:
+
+```bash
+python manage.py startapp polls
+```
+
+That’ll create a directory `polls`
+
+## Write your first view
+
+Open polls/views.py
+
+```py
+from django.http import HttpResponse
+def index(request):
+    return HttpResponse("Hello, world. You're at the polls index.")
+```
+
+This is the most basic view possible in django.
+
+- To access it in a browser, we need to map it to a URL
+- create polls/urls.py and open it
+
+```py
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path("", views.index, name="index"),
+]
+```
+
+- The next step is to configure the root URLconf in the project_core to include the URLconf defined in polls
+
+project_core/urls.py
+
+```py
+from django.contrib import admin
+from django.urls import include, path
+
+urlpatterns = [
+    path("polls/", include("polls.urls")), #new
+    path("admin/", admin.site.urls),
+]
+```
+
+- We have now wired an index view into the URLconf. Verify it’s working with the following command:
+
+```bash
+python manage.py runserver
+```
+
+- Go to http://localhost:8000/polls/ in your browser, and you should see the text defined in the index view.
+
+## Creating models
