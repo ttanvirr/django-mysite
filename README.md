@@ -169,7 +169,7 @@ DATABASE_URL=postgres://<db_owner>:<owner_password>@<port>:5432/<db_name>
 python -c "import secrets; print(secrets.token_urlsafe(50))"
 ```
 
-- Install django-environ in the venv:
+- Install `django-environ` in the venv:
 
 ```bash
 pip install django-environ
@@ -231,6 +231,7 @@ Open polls/views.py
 
 ```py
 from django.http import HttpResponse
+
 def index(request):
     return HttpResponse("Hello, world. You're at the polls index.")
 ```
@@ -272,3 +273,87 @@ python manage.py runserver
 - Go to http://localhost:8000/polls/ in your browser, and you should see the text defined in the index view.
 
 ## Creating models
+
+- defining models means defining database layout, with additional metadata.
+- The goal is to define your data model in one place and automatically derive things from it.
+  This includes the migrations
+- In our poll app, we’ll create two models: Question and Choice. Each Choice is associated with a Question.
+
+These concepts are represented by Python classes.
+
+Edit the polls/models.py
+
+```py
+from django.db import models
+
+
+class Question(models.Model):
+    question_text = models.CharField(max_length=200)
+    pub_date = models.DateTimeField("date published")
+
+
+class Choice(models.Model):
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    choice_text = models.CharField(max_length=200)
+    votes = models.IntegerField(default=0)
+```
+
+- Some Field classes have required arguments. `CharField`, for example, requires a `max_length`.
+- That `ForeignKey` tells Django that each Choice is related to a single Question. Django supports all the common database relationships: many-to-one, many-to-many, and one-to-one.
+
+## Activating models
+
+With django models, Django is able to:
+
+- Create a database schema (CREATE TABLE statements) for this app.
+- Create a Python database-access API for accessing Question and Choice objects.
+
+`But first we need to tell our project that the polls app is installed.`
+
+**Philosophy**
+
+- Django apps are “pluggable”: You can use an app in multiple projects.
+
+To include the app in our project, we need to edit the porject_core/settings.py file and add the dotted path of PollsConfig class to the INSTALLED_APPS setting:
+
+**project_core/settings.py**
+
+```py
+INSTALLED_APPS = [
+"polls.apps.PollsConfig", #new
+"django.contrib.admin",
+# others...
+]
+```
+
+Now Django knows to include the polls app. Let’s run another command:
+
+**terminal**
+
+```bash
+python manage.py makemigrations polls
+```
+
+- By running makemigrations, you’re telling Django that you’ve made some changes to your models and that you’d like the changes to be stored as a migration.
+- new migration file created - `polls/migrations/0001_initial.py`.
+
+**Note**
+
+- you can run `python manage.py check` to check for any problems in your projects without making migrations or touching the database.
+
+Now, run `migrate` to create those model tables in your database:
+
+**terminal**
+
+```bash
+python manage.py migrate
+```
+
+The _migrate_ command takes all the migrations that haven’t been applied and synchronizes the changes you made to your models with the schema in the database.
+
+**summary**
+
+- Run `python manage.py makemigrations` to create migrations for changes
+- Run `python manage.py migrate` to apply those changes to the database.
+
+## Playing with the API
