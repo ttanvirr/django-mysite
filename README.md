@@ -625,3 +625,57 @@ Change the `Date published` by clicking the “Today” and “Now” shortcuts.
 ## Django Views
 
 ### Overview
+
+A view is a “type” of web page in your Django application that generally serves a specific function and has a specific template.
+
+In our poll application, we’ll have the following four views:
+
+- Question “index” page – displays the latest few questions.
+- Question “detail” page – displays a question text, with no results but with a form to vote.
+- Question “results” page – displays results for a particular question.
+- Vote action – handles voting for a particular choice in a particular question.
+
+In Django, web pages and other content are delivered by views. Each view is represented by a Python function (or method, in the case of class-based views). Django will choose a view by examining the URL that’s requested.
+
+A URL pattern is the general form of a URL - for example: `/newsarchive/<year>/<month>/`.
+
+To get from a URL to a view, Django uses what are known as `URLconfs`. A URLconf maps URL patterns to views.
+
+This tutorial provides basic instruction in the use of URLconfs.
+
+### Writing more views
+
+Now let’s add a few more views to `polls/views.py`. These views take an argument:
+
+```py
+def detail(request, question_id):
+    return HttpResponse(f"You're looking at question {question_id}.")
+
+def result(request, question_id):
+    return HttpResponse(f"You're looking at the results of question {question_id}.")
+
+def vote(request, question_id):
+    return HttpResponse(f"You're voting on question {question_id}.")
+```
+
+Wire these new views into the `polls.urls` module by adding the following `path()` calls:
+
+```py
+# ....
+urlpatterns = [
+    # ex: /polls/
+    path("", views.index, name="index"),
+    # ex: /polls/5/
+    path("<int:question_id>/", views.detail, name="detail"),
+    # ex: /polls/5/results/
+    path("<int:question_id>/results/", views.result, name="result"),
+    # ex: /polls/5/vote/
+    path("<int:question_id>/vote/", views.vote, name="vote"),
+]
+```
+
+Using angle brackets “captures” part of the URL and sends it as a keyword argument to the view function.
+
+Take a look in your browser, at `/polls/34/`. It’ll run the `detail()` view function and display whatever ID you provide in the URL. Try `/polls/34/results/` and `/polls/34/vote/` too – these will display the placeholder results and voting pages.
+
+### Write views that actually do something
