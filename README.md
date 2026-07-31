@@ -599,3 +599,29 @@ admin.site.register(Question)
 Now that we’ve registered `Question`, Django knows that it should be displayed on the admin index page:
 
 ![admin poll app](doc-images/admin-poll-1.png)
+
+Click `Questions`. This page displays all the questions in the database and lets you choose one to change it:
+
+![admin poll app change list page](doc-images/admin-poll-2.png)
+
+Click the **What’s up?** question to edit it:
+
+![admin poll app edit page](doc-images/admin-poll-3.png)
+
+Things to note here:
+
+- The form is automatically generated from the Question model.
+- The different model field types (`DateTimeField`, `CharField`) correspond to the appropriate HTML input widget.
+- Each `DateTimeField` gets free JavaScript shortcuts. Dates get a `Today` shortcut and calendar popup, and times get a `Now` shortcut and a convenient popup that lists commonly entered times.
+
+The bottom part of the page gives you a couple of options:
+
+`Save`, `Save and continue editing`, `Save and add another`, and `Delete`.
+
+If the value of `Date published` doesn’t match the time when you created the question in Tutorial 1, it probably means you forgot to set the correct value for the `TIME_ZONE` setting.
+
+Change the `Date published` by clicking the “Today” and “Now” shortcuts. Then click “Save and continue editing.” Then click `History` in the upper right. You’ll see a page listing all changes made to this object, with the timestamp and username.
+
+## Django Views
+
+### Overview
