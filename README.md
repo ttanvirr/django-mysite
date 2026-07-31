@@ -544,3 +544,58 @@ True
 ```
 
 ## Introducing the Django Admin
+
+> [!NOTE]Philosophy
+> Django entirely automates creation of admin interfaces for your staff or clients to add, change, and delete content for models.
+>
+> The admin isn’t intended to be used by site visitors. It’s for site managers.
+
+### Creating an admin user
+
+First we’ll need to create a super user who can login to the admin site. Run the following command:
+
+```bash
+$ python manage.py createsuperuser
+```
+
+Enter your desired Username, Email address, and Password (twice) to create the superuser.
+
+### Start the development server
+
+The Django admin site is activated by default. Let’s start the development server and explore it:
+
+```bash
+$ python manage.py runserver
+```
+
+Now, open a web browser and go to `/admin/` on your local domain – e.g., http://127.0.0.1:8000/admin/. You
+should see the admin’s login screen.
+
+> TIP: if you set `LANGUAGE_CODE`, the login screen will be displayed in the given language (if Django has appropriate translations)
+
+### Enter the admin site
+
+Now, try logging in with the superuser account you created in the previous step. You should see the Django
+admin index page.
+
+You should see a few types of editable content: `Groups` and `Users`. They are provided by `django.contrib.
+auth`, the authentication framework shipped by Django.
+
+### Make the poll app modifiable in the admin
+
+But where’s our poll app? It’s not displayed on the admin index page.
+
+Open the `polls/admin.py` file, and edit it to look like this:
+
+```py
+from django.contrib import admin
+from .models import Question
+
+admin.site.register(Question)
+```
+
+### Explore the free admin functionality
+
+Now that we’ve registered `Question`, Django knows that it should be displayed on the admin index page:
+
+![admin poll app](doc-images/admin-poll-1.png)
