@@ -1,3 +1,17 @@
+# Table of Contents
+
+- [Get started quickly](#get-started-quickly)
+
+- [Step by step guide from scratch - Initial setups](#step-by-step-guide-from-scratch-for-ubuntu-or-wsl)
+
+- [Creating the Polls app](#creating-the-polls-app)
+  - [Write you first view](#write-your-first-view)
+  - [Creating models](#creating-models)
+  - [Activating models](#activating-models)
+  - [Playing with the API](#playing-with-the-api)
+  - [Introducing the Django Admin](#introducing-the-django-admin)
+  - [Django Views](#django-views)
+
 # Get started quickly
 
 - install dependencies
@@ -679,3 +693,101 @@ Using angle brackets “captures” part of the URL and sends it as a keyword ar
 Take a look in your browser, at `/polls/34/`. It’ll run the `detail()` view function and display whatever ID you provide in the URL. Try `/polls/34/results/` and `/polls/34/vote/` too – these will display the placeholder results and voting pages.
 
 ### Write views that actually do something
+
+Each view is responsible for doing one of two things: returning an `HttpResponse` object containing the content for the requested page, or raising an exception such as `Http404`. The rest is up to you.
+
+Your view can read records from a database, or not. It can use a template system such as Django’s – or a third-party Python template system – or not. It can generate a PDF file, output XML, create a ZIP file on the fly, anything you want, using whatever Python libraries you want.
+
+All Django wants is that `HttpResponse`. Or an exception.
+
+Let's modify the `index()` view, which displays the latest 5 poll questions in the system, separated by commas, according to publication date:
+
+`polls/views.py`
+
+```py
+from django.http import HttpResponse
+from .models import Question
+
+def index(request):
+    latest_question_list = Question.objects.order_by("-pub_date")[:5]
+    output = ", ".join([q.question_text for q in latest_question_list])
+    return HttpResponse(output)
+```
+
+You can add more questions via admin site to see 5 questions on browser.
+
+There’s a problem here, though: the page’s design is hardcoded in the view. If you want to change the way the page looks, you’ll have to edit this Python code. So let’s use Django’s template system to separate the design from Python by creating a template that the view can use.
+
+First, create a directory called `templates` in your `polls` directory. Django will look for templates in there.
+
+Your project’s `TEMPLATES` setting describes how Django will load and render templates. The default settings file configures a `DjangoTemplates` backend whose `APP_DIRS` option is set to True. By convention `DjangoTemplates` looks for a `templates` subdirectory in each of the `INSTALLED_APPS`.
+
+Within the templates directory you have just created, create another directory called `polls`, and within that create a file called `index.html`. In other words, your template should be at `polls/templates/polls/index.html`. Because of how the `app_directories` template loader works as described above, you can refer to this template within Django as `polls/index.html`.
+
+Put the following code in that template:
+
+```django
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mysite</title>
+  </head>
+  <body>
+    {% if latest_question_list %}
+    <ul>
+      {% for question in latest_question_list %}
+      <li>
+        <a href="/polls/{{ question.id }}/">{{ question.question_text }}</a>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p>No polls are available.</p>
+    {% endif %}
+  </body>
+</html>
+```
+
+Now let’s update our index view in polls/views.py to use the template:
+
+`polls/views.py`
+
+```py
+from django.http import HttpResponse
+from django.template import loader
+
+from .models import Question
+
+def index(request):
+    latest_question_list = Question.objects.order_by("-pub_date")[:5]
+    template = loader.get_template("polls/index.html")
+    context = {"latest_question_list": latest_question_list}
+    return HttpResponse(template.render(context, request))
+```
+
+That code loads the template called `polls/index.html` and passes it a context. The **context** is a dictionary mapping template variable names to Python objects.
+
+Load the page by pointing your browser at “/polls/”, and you should see a bulleted-list containing the “What’s up” question from Tutorial 2. The link points to the question’s detail page.
+
+#### A shortcut: `render()`
+
+It’s a very common idiom to load a template, fill a `context` and return an `HttpResponse` object with the result of the rendered template. Django provides a shortcut. Here’s the full `index()` view, rewritten:
+
+`polls/views.py`
+
+```py
+from django.shortcuts import render
+
+from .models import Question
+
+def index(request):
+    latest_question_list = Question.objects.order_by("-pub_date")[:5]
+    context = {"latest_question_list": latest_question_list}
+    return render(request, "polls/index.html", context)
+```
+
+The `render()` function takes the `request` object as its first argument, a **template name** as its second argument and a **dictionary** as its optional third argument. It returns an **HttpResponse** object of the given template rendered with the given context.
+
+### Raising a 404 error
