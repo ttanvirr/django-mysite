@@ -1,18 +1,44 @@
-# Table of Contents
+# Table of Contents <!-- omit in toc -->
 
-- [Get started quickly](#get-started-quickly)
+- [1. Run the existing project](#1-run-the-existing-project)
+- [2. Step by step guide from scratch (for Ubuntu or wsl)](#2-step-by-step-guide-from-scratch-for-ubuntu-or-wsl)
+  - [2.1. Install python (if still not)](#21-install-python-if-still-not)
+  - [2.2. Create venv (virtual environment)](#22-create-venv-virtual-environment)
+  - [2.3. Install Django](#23-install-django)
+  - [2.4. Create a django project](#24-create-a-django-project)
+  - [2.5. Database setup for PostgreSQL](#25-database-setup-for-postgresql)
+    - [2.5.1. Install `psycopg` package (https://github.com/psycopg/psycopg/)](#251-install-psycopg-package-httpsgithubcompsycopgpsycopg)
+    - [2.5.2. Create database](#252-create-database)
+      - [2.5.2.1. enter postgress psql shell](#2521-enter-postgress-psql-shell)
+    - [2.5.3. Settings file](#253-settings-file)
+    - [2.5.4. Environ variables](#254-environ-variables)
+    - [2.5.5. Git commit](#255-git-commit)
+  - [2.6. (Optional) TailwindCSS and DaisyUI setup for frontend (not for this project)](#26-optional-tailwindcss-and-daisyui-setup-for-frontend-not-for-this-project)
+- [3. CREATING the Polls app](#3-creating-the-polls-app)
+  - [3.1. Write your first view](#31-write-your-first-view)
+  - [3.2. Creating models](#32-creating-models)
+  - [3.3. Activating models](#33-activating-models)
+  - [3.4. Playing with the API](#34-playing-with-the-api)
+      - [3.4.0.1. Add custom method to model](#3401-add-custom-method-to-model)
+      - [3.4.0.2. Back to shell](#3402-back-to-shell)
+  - [3.5. Introducing the Django Admin](#35-introducing-the-django-admin)
+    - [3.5.1. Creating an admin user](#351-creating-an-admin-user)
+    - [3.5.2. Start the development server](#352-start-the-development-server)
+    - [3.5.3. Enter the admin site](#353-enter-the-admin-site)
+    - [3.5.4. Make the poll app modifiable in the admin](#354-make-the-poll-app-modifiable-in-the-admin)
+    - [3.5.5. Explore the free admin functionality](#355-explore-the-free-admin-functionality)
+  - [3.6. Django Views](#36-django-views)
+    - [3.6.1. Overview](#361-overview)
+    - [3.6.2. Writing more views](#362-writing-more-views)
+    - [3.6.3. Write views that actually do something](#363-write-views-that-actually-do-something)
+      - [3.6.3.1. A shortcut: `render()`](#3631-a-shortcut-render)
+    - [3.6.4. Raising a 404 error](#364-raising-a-404-error)
+      - [3.6.4.1. A shortcut: get\_object\_or\_404()](#3641-a-shortcut-get_object_or_404)
+    - [3.6.5. Use the template system](#365-use-the-template-system)
+    - [3.6.6. Removing hardcoded URLs in templates](#366-removing-hardcoded-urls-in-templates)
+    - [3.6.7. Namespacing URL names](#367-namespacing-url-names)
 
-- [Step by step guide from scratch - Initial setups](#step-by-step-guide-from-scratch-for-ubuntu-or-wsl)
-
-- [Creating the Polls app](#creating-the-polls-app)
-  - [Write you first view](#write-your-first-view)
-  - [Creating models](#creating-models)
-  - [Activating models](#activating-models)
-  - [Playing with the API](#playing-with-the-api)
-  - [Introducing the Django Admin](#introducing-the-django-admin)
-  - [Django Views](#django-views)
-
-# Get started quickly
+# 1. Run the existing project
 
 - install dependencies
   **terminal**
@@ -29,9 +55,9 @@ pip install -r requirements.txt
 python manage.py migration
 ```
 
-# Step by step guide from scratch (for Ubuntu or wsl)
+# 2. Step by step guide from scratch (for Ubuntu or wsl)
 
-## Install python (if still not)
+## 2.1. Install python (if still not)
 
 - for ubuntu (wsl)
 
@@ -40,7 +66,7 @@ sudo apt update
 sudo apt install python3 python3-pip python3-venv
 ```
 
-## Create venv (virtual environment)
+## 2.2. Create venv (virtual environment)
 
 - Create a venv inside the project directory
 
@@ -62,7 +88,7 @@ python3 -m venv .venv
 source .venv/bin/activate
 ```
 
-## Install Django
+## 2.3. Install Django
 
 ```bash
 python -m pip install django
@@ -89,7 +115,7 @@ python
 python -m django --version
 ```
 
-## Create a django project
+## 2.4. Create a django project
 
 ```bash
 django-admin startproject project_core .
@@ -106,12 +132,12 @@ python manage.py runserver
 
 - ignore the 'unapplied migration' warning for now.
 
-## Database setup for PostgreSQL
+## 2.5. Database setup for PostgreSQL
 
 - Django comes with `sqlite` db by defalut. But if we want to setup big db engines like PostgreSql, we need to set it up.
 - This can be done at the end, but recommended to do at the beginning to avoid any issue
 
-### Install `psycopg` package (https://github.com/psycopg/psycopg/)
+### 2.5.1. Install `psycopg` package (https://github.com/psycopg/psycopg/)
 
 - Install following packages in global system (not in venv)
 
@@ -135,9 +161,9 @@ pip install "psycopg[c,pool]"
 pip freeze > requirements.txt
 ```
 
-### Create database
+### 2.5.2. Create database
 
-#### enter postgress psql shell
+#### 2.5.2.1. enter postgress psql shell
 
 open wsl
 
@@ -162,7 +188,7 @@ This will grant all privileges to the user by default
 \l
 ```
 
-### Settings file
+### 2.5.3. Settings file
 
 - Install dj-database-url for convenience (https://pypi.org/project/dj-database-url/)
 
@@ -191,7 +217,7 @@ psql -U <db_user> -d <db_name>
 
 This tables are created based on INSTALLED_APPS listed in settings.py
 
-### Environ variables
+### 2.5.4. Environ variables
 
 - create .env file in the root
 
@@ -247,15 +273,15 @@ DATABASES = {
 
 - Stop the server, run migrate and server. Check if everything is okay
 
-### Git commit
+### 2.5.5. Git commit
 
 - As initial setups have completed, do your first commit (optionally push to a github repo)
 
-## (Optional) TailwindCSS and DaisyUI setup for frontend (not for this project)
+## 2.6. (Optional) TailwindCSS and DaisyUI setup for frontend (not for this project)
 
 <!-- ============================END INITIAL DJANGO SETUPS============================== -->
 
-# CREATING the Polls app
+# 3. CREATING the Polls app
 
 - To create your app, make sure you’re in the same directory as manage.py and type this command:
 
@@ -265,7 +291,7 @@ python manage.py startapp polls
 
 That’ll create a directory `polls`
 
-## Write your first view
+## 3.1. Write your first view
 
 Open polls/views.py
 
@@ -312,7 +338,7 @@ python manage.py runserver
 
 - Go to http://localhost:8000/polls/ in your browser, and you should see the text defined in the index view.
 
-## Creating models
+## 3.2. Creating models
 
 - defining models means defining database layout, with additional metadata.
 - The goal is to define your data model in one place and automatically derive things from it.
@@ -341,7 +367,7 @@ class Choice(models.Model):
 - Some Field classes have required arguments. `CharField`, for example, requires a `max_length`.
 - That `ForeignKey` tells Django that each Choice is related to a single Question. Django supports all the common database relationships: many-to-one, many-to-many, and one-to-one.
 
-## Activating models
+## 3.3. Activating models
 
 With django models, Django is able to:
 
@@ -396,7 +422,7 @@ The _migrate_ command takes all the migrations that haven’t been applied and s
 - Run `python manage.py makemigrations` to create migrations for changes
 - Run `python manage.py migrate` to apply those changes to the database.
 
-## Playing with the API
+## 3.4. Playing with the API
 
 Now, let’s hop into the interactive `Python shell`:
 
@@ -459,7 +485,7 @@ class Choice(models.Model):
 
 These objects’ representations are used throughout Django’s automatically-generated admin.
 
-#### Add custom method to model
+#### 3.4.0.1. Add custom method to model
 
 Let’s also add a custom method to this model:
 
@@ -477,7 +503,7 @@ class Question(models.Model):
         return self.pub_date >= timezone.now() - datetime.timedelta(days=1)
 ```
 
-#### Back to shell
+#### 3.4.0.2. Back to shell
 
 If you are still in the shell, you need to exit first using `exit())`. Run `python manage.py shell` again to reload
 the models.
@@ -557,14 +583,14 @@ True
 >>> c.delete()
 ```
 
-## Introducing the Django Admin
+## 3.5. Introducing the Django Admin
 
 > [!NOTE]Philosophy
 > Django entirely automates creation of admin interfaces for your staff or clients to add, change, and delete content for models.
 >
 > The admin isn’t intended to be used by site visitors. It’s for site managers.
 
-### Creating an admin user
+### 3.5.1. Creating an admin user
 
 First we’ll need to create a super user who can login to the admin site. Run the following command:
 
@@ -574,7 +600,7 @@ $ python manage.py createsuperuser
 
 Enter your desired Username, Email address, and Password (twice) to create the superuser.
 
-### Start the development server
+### 3.5.2. Start the development server
 
 The Django admin site is activated by default. Let’s start the development server and explore it:
 
@@ -587,7 +613,7 @@ should see the admin’s login screen.
 
 > TIP: if you set `LANGUAGE_CODE`, the login screen will be displayed in the given language (if Django has appropriate translations)
 
-### Enter the admin site
+### 3.5.3. Enter the admin site
 
 Now, try logging in with the superuser account you created in the previous step. You should see the Django
 admin index page.
@@ -595,7 +621,7 @@ admin index page.
 You should see a few types of editable content: `Groups` and `Users`. They are provided by `django.contrib.
 auth`, the authentication framework shipped by Django.
 
-### Make the poll app modifiable in the admin
+### 3.5.4. Make the poll app modifiable in the admin
 
 But where’s our poll app? It’s not displayed on the admin index page.
 
@@ -608,7 +634,7 @@ from .models import Question
 admin.site.register(Question)
 ```
 
-### Explore the free admin functionality
+### 3.5.5. Explore the free admin functionality
 
 Now that we’ve registered `Question`, Django knows that it should be displayed on the admin index page:
 
@@ -636,9 +662,9 @@ If the value of `Date published` doesn’t match the time when you created the q
 
 Change the `Date published` by clicking the “Today” and “Now” shortcuts. Then click “Save and continue editing.” Then click `History` in the upper right. You’ll see a page listing all changes made to this object, with the timestamp and username.
 
-## Django Views
+## 3.6. Django Views
 
-### Overview
+### 3.6.1. Overview
 
 A view is a “type” of web page in your Django application that generally serves a specific function and has a specific template.
 
@@ -657,7 +683,7 @@ To get from a URL to a view, Django uses what are known as `URLconfs`. A URLconf
 
 This tutorial provides basic instruction in the use of URLconfs.
 
-### Writing more views
+### 3.6.2. Writing more views
 
 Now let’s add a few more views to `polls/views.py`. These views take an argument:
 
@@ -692,7 +718,7 @@ Using angle brackets “captures” part of the URL and sends it as a keyword ar
 
 Take a look in your browser, at `/polls/34/`. It’ll run the `detail()` view function and display whatever ID you provide in the URL. Try `/polls/34/results/` and `/polls/34/vote/` too – these will display the placeholder results and voting pages.
 
-### Write views that actually do something
+### 3.6.3. Write views that actually do something
 
 Each view is responsible for doing one of two things: returning an `HttpResponse` object containing the content for the requested page, or raising an exception such as `Http404`. The rest is up to you.
 
@@ -771,7 +797,7 @@ That code loads the template called `polls/index.html` and passes it a context. 
 
 Load the page by pointing your browser at “/polls/”, and you should see a bulleted-list containing the “What’s up” question from Tutorial 2. The link points to the question’s detail page.
 
-#### A shortcut: `render()`
+#### 3.6.3.1. A shortcut: `render()`
 
 It’s a very common idiom to load a template, fill a `context` and return an `HttpResponse` object with the result of the rendered template. Django provides a shortcut. Here’s the full `index()` view, rewritten:
 
@@ -790,4 +816,126 @@ def index(request):
 
 The `render()` function takes the `request` object as its first argument, a **template name** as its second argument and a **dictionary** as its optional third argument. It returns an **HttpResponse** object of the given template rendered with the given context.
 
-### Raising a 404 error
+### 3.6.4. Raising a 404 error
+
+Now, let’s tackle the question detail view – the page that displays the question text for a given poll. Here’s the view:
+
+`polls/views.py`
+
+```py
+from django.http import Http404
+
+# ...
+def detail(request, question_id):
+    try:
+        question = Question.objects.get(pk=question_id)
+    except Question.DoesNotExist:
+        raise Http404("Question does not exist")
+
+    return render(request, "polls/detail.html", {"question": question})
+```
+
+The new concept here: The view raises the `Http404` exception if a question with the requested ID doesn’t exist.
+
+If you’d like to quickly view the above example working on browser, create the file `detail.html` in `polls/templates/polls` containing just:
+
+```django
+{{ question }}
+```
+
+#### 3.6.4.1. A shortcut: get_object_or_404()
+
+It’s a very common idiom to use `get()` and raise `Http404` if the object doesn’t exist. Django provides a shortcut. Here’s the `detail()` view, rewritten:
+
+`polls/views.py`
+
+```py
+from django.shortcuts import get_object_or_404, render
+
+# ...
+def detail(request, question_id):
+    question = get_object_or_404(Question, pk=question_id)
+    return render(request, "polls/detail.html", {"question": question})
+```
+
+> [!TIP]
+> There’s also a `get_list_or_404()` function, which works just as `get_object_or_404()` – except using `filter()` instead of `get()`. It raises `Http404` if the list is empty.
+
+### 3.6.5. Use the template system
+
+Back to the `detail()` view. Given the context variable `question`, here’s what the `polls/detail.html` template might look like:
+
+```django
+<h1>{{ question.question_text }}</h1>
+<ul>
+{% for choice in question.choice_set.all %}
+    <li>{{ choice.choice_text }}</li>
+{% endfor %}
+</ul>
+```
+
+The template system uses dot-lookup syntax.
+
+Method-calling happens in the `{% for %}` loop: `question.choice_set.all` which returns an iterable of Choice objects.
+
+### 3.6.6. Removing hardcoded URLs in templates
+
+We wrote the link to a question in the `polls/index.html` template, was partially hardcoded like this:
+
+```django
+<li><a href="/polls/{{ question.id }}/">{{ question.question_text }}</a></li>
+```
+
+However, since you defined the name argument in the `path()` functions in the `polls.urls` module, you can remove a reliance on specific URL paths defined in your url configurations by using the `{% url %}` template tag:
+
+```py
+<li><a href="{% url 'detail' question.id %}">{{ question.question_text }}</a></li>
+```
+
+The way this works is by looking up the URL definition as specified in the `polls.urls` module where the URL name of ‘detail’ is also defined:
+
+```py
+...
+# the 'name' value as called by the {% url %} template tag
+path("<int:question_id>/", views.detail, name="detail"),
+...
+```
+
+### 3.6.7. Namespacing URL names
+
+The tutorial project has just one app, `polls`. In real Django projects, there might be five, ten, twenty apps or more. How does Django differentiate the URL names between them (if they use the same name)?
+
+The answer is to add namespaces to your URLconf. In the `polls/urls.py` file, go ahead and add an `app_name` to set the application namespace:
+
+```py
+from django.urls import path
+
+from . import views
+
+app_name = "polls"
+urlpatterns = [
+    path("", views.index, name="index"),
+    path("<int:question_id>/", views.detail, name="detail"),
+    path("<int:question_id>/results/", views.results, name="results"),
+    path("<int:question_id>/vote/", views.vote, name="vote"),
+]
+```
+
+Now change your `polls/index.html` template from:
+
+`polls/templates/polls/index.html`
+
+```django
+<li><a href="{% url 'detail' question.id %}">{{ question.question_text }}</a></li>
+```
+
+to point at the namespaced detail view:
+
+`polls/templates/polls/index.html`
+
+```py
+<li><a href="{% url 'polls:detail' question.id %}">{{ question.question_text }}</a></li>
+```
+
+> [!WARNING]
+> After adding namespacing in URLconf, you must use them in `{% url %}`. Otherwise you will get a `NoReverseMatch` error while browing the page.
