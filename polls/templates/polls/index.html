@@ -3,13 +3,15 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description"
+              content="Browse the latest polls and vote on your favorite questions.">
         <title>Mysite</title>
     </head>
     <body>
         {% if latest_question_list %}
             <ul>
                 {% for question in latest_question_list %}
-                    <li><a href="/polls/{{ question.id }}/">{{ question.question_text }}</a></li>
+                    <li><a href='{% url "polls:detail" question.id %}'>{{ question.question_text }}</a></li>
                 {% endfor %}
             </ul>
         {% else %}
