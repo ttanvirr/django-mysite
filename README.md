@@ -37,23 +37,36 @@
     - [3.6.5. Use the template system](#365-use-the-template-system)
     - [3.6.6. Removing hardcoded URLs in templates](#366-removing-hardcoded-urls-in-templates)
     - [3.6.7. Namespacing URL names](#367-namespacing-url-names)
+  - [3.7. Write a minimal form](#37-write-a-minimal-form)
+  - [3.8. Use generic views: Less code is better](#38-use-generic-views-less-code-is-better)
+    - [3.8.1. Amend views](#381-amend-views)
+    - [3.8.2. Amend URLconf](#382-amend-urlconf)
 
 # 1. Run the existing project
 
 - install dependencies
+
   **terminal**
 
-```bash
-pip install -r requirements.txt
-```
+  ```bash
+  pip install -r requirements.txt
+  ```
 
 - run `migrate`
 
-**terminal**
+  **terminal**
 
-```bash
-python manage.py migration
-```
+  ```bash
+  python manage.py migration
+  ```
+
+- run dev server
+
+  ```bash
+  python manage.py runserver
+  ```
+
+- Visit http://127.0.0.1:8000/polls/ to see the poll questions.
 
 # 2. Step by step guide from scratch (for Ubuntu or wsl)
 
@@ -939,3 +952,211 @@ to point at the namespaced detail view:
 
 > [!WARNING]
 > After adding namespacing in URLconf, you must use them in `{% url %}`. Otherwise you will get a `NoReverseMatch` error while browing the page.
+
+## 3.7. Write a minimal form
+
+Let’s update our poll detail template, so that the template contains an HTML `<form>` element:
+
+`polls/templates/polls/detail.html`
+
+```django
+<form action="{% url 'polls:vote' question.id %}" method="post">
+{% csrf_token %}
+<fieldset>
+    <legend><h1>{{ question.question_text }}</h1></legend>
+    {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+    {% for choice in question.choice_set.all %}
+        <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}">
+        <label for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label><br>
+    {% endfor %}
+</fieldset>
+<input type="submit" value="Vote">
+</form>
+```
+
+A quick rundown:
+
+- The value of each radio button is the associated question choice’s ID. The name of each radio button is "choice". That means, when somebody selects one of the radio buttons and submits the form, it’ll send the POST data `choice=#` where `#` is the ID of the selected choice. This is the basic concept of HTML forms.
+
+- We set the form’s `action` to `{% url 'polls:vote' question.id %}`. Using `method="post"` (as opposed to `method="get"`) is very important, because the act of submitting this form will alter data server-side.
+
+- `forloop.counter` indicates how many times the `for` tag has gone through its loop
+
+- Since we’re creating a POST form, we need to worry about **Cross Site Request Forgeries**. Django comes with a helpful system for protecting against it. In short, all POST forms that are targeted at internal URLs should use the `{% csrf_token %}` template tag.
+
+Now, let’s create a Django view that handles the submitted data and does something with it. We've already created a URLconf for the polls application that includes this line:
+
+`polls/urls.py`
+
+```py
+path("<int:question_id>/vote/", views.vote, name="vote"),
+```
+
+Let’s create a real `vote()` function. Add the following to `polls/views.py`:
+
+```py
+from django.db.models import F
+from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import get_object_or_404, render
+from django.urls import reverse
+
+from .models import Choice, Question
+
+
+# ...
+def vote(request, question_id):
+    question = get_object_or_404(Question, pk=question_id)
+    try:
+        selected_choice = question.choice_set.get(pk=request.POST["choice"])
+    except (KeyError, Choice.DoesNotExist):
+        # Redisplay the question voting form.
+        return render(
+            request,
+            "polls/detail.html",
+            {
+                "question": question,
+                "error_message": "You didn't select a choice.",
+            },
+        )
+    else:
+        selected_choice.votes = F("votes") + 1
+        selected_choice.save()
+        # Always return an HttpResponseRedirect after successfully dealing
+        # with POST data. This prevents data from being posted twice if a
+        # user hits the Back button.
+        # Don't forget the trailing `,` in args tuple
+        return HttpResponseRedirect(reverse("polls:results", args=(question.id,)))
+```
+
+This code includes a few things:
+
+- `request.POST` is a dictionary-like object that lets you access submitted data by key name. In this case, `request.POST['choice']` returns the `ID` of the selected `choice`, as a string. `request.POST` values are always strings.
+
+- `request.POST['choice']` will raise `KeyError` if choice wasn’t provided in POST data. The above code checks for `KeyError` and redisplays the question form with an error message if `choice` isn’t given.
+
+- `F("votes") + 1` instructs the database to increase the vote count by 1.
+
+- After incrementing the choice count, the code returns an `HttpResponseRedirect` rather than a normal `HttpResponse`. `HttpResponseRedirect` takes a single argument: the URL to which the user will be redirected.
+
+  As the Python comment above points out, you should always return an `HttpResponseRedirect` after successfully dealing with POST data.
+
+- We are using the `reverse()` function in the `HttpResponseRedirect` constructor in this example. This function helps avoid having to hardcode a URL in the view function. In this case, this `reverse()` call will return a string like: `"/polls/3/results/"`
+
+- `request` is an `HttpRequest` object.
+
+The redirected URL will then call the 'results' view to display the final page. Let’s write that view:
+
+`polls/views.py`
+
+```py
+from django.shortcuts import get_object_or_404, render
+
+def results(request, question_id):
+    question = get_object_or_404(Question, pk=question_id)
+    return render(request, "polls/results.html", {"question": question})
+```
+
+This is almost exactly the same as the `detail()` view. The only difference is the template name. We’ll fix this redundancy later.
+
+Now, create a `polls/results.html` template:
+
+`polls/templates/polls/results.html`
+
+```django
+<h1>{{ question.question_text }}</h1>
+
+<ul>
+{% for choice in question.choice_set.all %}
+    <li>{{ choice.choice_text }} -- {{ choice.votes }} vote{{ choice.votes|pluralize }}</li>
+{% endfor %}
+</ul>
+
+<a href="{% url 'polls:detail' question.id %}">Vote again?</a>
+```
+
+Now, go to `/polls/1/` in your browser and vote in the question. You should see a results page that gets updated each time you vote. If you submit the form without having chosen a choice, you should see the error message.
+
+## 3.8. Use generic views: Less code is better
+
+The `detail()` and `results()` views are very short – and, as mentioned above, redundant. The `index()` view, which displays a list of polls, is similar.
+
+These views represent a common case of basic web development: getting data from the database according to a parameter passed in the URL, loading a template and returning the rendered template. Because this is so common, Django provides a shortcut, called the `“generic views”` system.
+
+Generic views abstract common patterns to the point where you don’t even need to write Python code to write an app. For example, the `ListView` and `DetailView` generic views abstract the concepts of “display a list of objects” and “display a detail page for a particular type of object” respectively.
+
+Let’s convert our poll app to use the generic views system. We’ll have to take a few steps to make the conversion. We will:
+
+1. Delete some of the old, unneeded views.
+2. Introduce new views based on Django’s generic views.
+3. Convert the URLconf.
+
+### 3.8.1. Amend views
+
+First, we’re going to remove our old index, detail, and results views and use Django’s generic views instead.
+
+`polls/views.py`
+
+```py
+from django.db.models import F
+from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404, render
+from django.urls import reverse
+from django.views import generic
+
+from .models import Choice, Question
+
+
+class IndexView(generic.ListView):
+    template_name = "polls/index.html"
+    context_object_name = "latest_question_list"
+
+    def get_queryset(self):
+        """Return the last five published questions."""
+        return Question.objects.order_by("-pub_date")[:5]
+
+
+class DetailView(generic.DetailView):
+    model = Question
+    template_name = "polls/detail.html"
+
+
+class ResultsView(generic.DetailView):
+    model = Question
+    template_name = "polls/results.html"
+
+
+def vote(request, question_id):
+    # same as above, no changes needed.
+    ...
+```
+
+Each generic view needs to know what model it will be acting upon. This is provided using either the `model` attribute (here, `model = Question` for `DetailView` and `ResultsView`) or by defining the `get_queryset()` method (as in `IndexView`).
+
+By default, the `DetailView` generic view uses a template called `<app name>/<model name>\_detail.html`. The `template_name` attribute is used to tell Django to use a specific custom template name.
+
+Similarly, the `ListView` generic view uses a default template called `<app name>/<model name>\_list.html`; we use `template_name` to tell `ListView` to use our existing `"polls/index.html"` template.
+
+Our templates already have been provided with a context that contains the `question` and `latest_question_list` context variables. For `DetailView` the `question` variable is provided automatically – since we’re using a Django model (`Question`). However, for `ListView`, the automatically generated context variable is `question_list`. To override this we provide the `context_object_name` attribute.
+
+### 3.8.2. Amend URLconf
+
+Now, open the `polls/urls.py` URLconf and change it like so:
+
+```py
+from django.urls import path
+
+from . import views
+
+app_name = "polls"
+urlpatterns = [
+    path("", views.IndexView.as_view(), name="index"),
+    path("<int:pk>/", views.DetailView.as_view(), name="detail"),
+    path("<int:pk>/results/", views.ResultsView.as_view(), name="results"),
+    path("<int:question_id>/vote/", views.vote, name="vote"),
+]
+
+```
+
+Note that in the path strings of the second and third patterns has changed from `<question_id>` to `<pk>`. This is necessary because we’ll use the `DetailView` generic view, and it expects the primary key value captured from the URL to be called `"pk"`.
+
+Run the server, and use your new polling app based on generic views.
