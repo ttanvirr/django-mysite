@@ -76,6 +76,10 @@
       - [3.11.4.1. Customizing your project’s templates](#31141-customizing-your-projects-templates)
       - [3.11.4.2. Customizing your application’s templates](#31142-customizing-your-applications-templates)
     - [3.11.5. Customize the admin index page](#3115-customize-the-admin-index-page)
+  - [3.12. Third-party packages](#312-third-party-packages)
+    - [3.12.1. Installing Django Debug Toolbar](#3121-installing-django-debug-toolbar)
+    - [3.12.2. Getting help from others](#3122-getting-help-from-others)
+    - [3.12.3. Installing other third-party packages](#3123-installing-other-third-party-packages)
 
 # 1. Run the existing project
 
@@ -2027,3 +2031,39 @@ You may want to make significant changes to the default layout.
 The template to customize is `admin/index.html`. (Copy it from the default directory to your custom template directory). Edit the file, and you’ll see it uses a template variable called `app_list`. That variable contains every installed Django app. Instead of using that, you can hardcode links to object-specific admin pages in whatever way you think is best.
 
 [⬆️ Return to Table of contents](#table-of-contents)
+
+## 3.12. Third-party packages
+
+One of Django’s strengths is the rich ecosystem of third-party packages. They’re community developed packages that can be used to quickly improve the feature set of an application.
+
+This tutorial will show how to add `Django Debug Toolbar`, a commonly used third-party package.
+
+### 3.12.1. Installing Django Debug Toolbar
+
+`Django Debug Toolbar` is a useful tool for debugging Django web applications. The toolbar helps you understand how your application functions and to identify problems. It does so by providing panels that provide debug information about the current request and response.
+
+To install a third-party application like the toolbar, you need to install the package within an activated virtual environment.
+
+```bash
+(.venv) $ python -m pip install django-debug-toolbar
+pip freeze > requirements.txt
+```
+
+Third-party packages that integrate with Django need some post-installation setup to integrate them with your project.
+
+Django Debug Toolbar requires several setup steps. Follow them in [its installation guide](https://tinyurl.com/bdurp862).
+
+Once installed, you should be able to see the `DjDT` “handle” on the right side of the browser window when you browse to http://localhost:8000/admin/. Click it to open the debug toolbar and use the tools in each panel. See the [panels documentation page](https://tinyurl.com/bdfjsb4u) for more information on what the panels show.
+
+### 3.12.2. Getting help from others
+
+At some point you will run into a problem, for example the toolbar may not render. When this happens and you’re unable to resolve the issue yourself, there are options available to you.
+
+- If the problem is with a specific package, check if there’s a troubleshooting guide or FAQ in the package’s documentation.
+- Search for similar issues on the package’s issue tracker. Django Debug Toolbar’s is on GitHub.
+- Consult the `Django Forum`.
+- Join the `Django Discord server`.
+
+### 3.12.3. Installing other third-party packages
+
+There are many more third-party packages, which you can find using the Django resource, [Django Packages](https://djangopackages.org/).
