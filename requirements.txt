@@ -15,5 +15,6 @@ psycopg-c==3.3.4
 psycopg-pool==3.3.1
 PyYAML==6.0.3
 regex==2026.7.19
+setuptools==84.0.0
 sqlparse==0.5.5
 typing_extensions==4.15.0
