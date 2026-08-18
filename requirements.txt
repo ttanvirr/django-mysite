@@ -5,6 +5,7 @@ dj-database-url==3.1.2
 Django==6.0.6
 django-debug-toolbar==7.1.1
 django-environ==0.14.0
+django-polls @ file:///home/tanvir/practice/django/documentation/django-polls/dist/django_polls-0.1.tar.gz#sha256=664d476a1a6b8881947a26a375c31f12f7d76119d3d0a0ceadac5fa34371316e
 djlint==1.43.2
 EditorConfig==0.17.1
 jsbeautifier==2.0.3

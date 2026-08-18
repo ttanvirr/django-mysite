@@ -19,8 +19,8 @@
   - [3.2. Creating models](#32-creating-models)
   - [3.3. Activating models](#33-activating-models)
   - [3.4. Playing with the API](#34-playing-with-the-api)
-      - [3.4.0.1. Add custom method to model](#3401-add-custom-method-to-model)
-      - [3.4.0.2. Back to shell](#3402-back-to-shell)
+    - [3.4.0.1. Add custom method to model](#3401-add-custom-method-to-model)
+    - [3.4.0.2. Back to shell](#3402-back-to-shell)
   - [3.5. Introducing the Django Admin](#35-introducing-the-django-admin)
     - [3.5.1. Creating an admin user](#351-creating-an-admin-user)
     - [3.5.2. Start the development server](#352-start-the-development-server)
@@ -33,7 +33,7 @@
     - [3.6.3. Write views that actually do something](#363-write-views-that-actually-do-something)
       - [3.6.3.1. A shortcut: `render()`](#3631-a-shortcut-render)
     - [3.6.4. Raising a 404 error](#364-raising-a-404-error)
-      - [3.6.4.1. A shortcut: get\_object\_or\_404()](#3641-a-shortcut-get_object_or_404)
+      - [3.6.4.1. A shortcut: get_object_or_404()](#3641-a-shortcut-get_object_or_404)
     - [3.6.5. Use the template system](#365-use-the-template-system)
     - [3.6.6. Removing hardcoded URLs in templates](#366-removing-hardcoded-urls-in-templates)
     - [3.6.7. Namespacing URL names](#367-namespacing-url-names)
@@ -2318,4 +2318,17 @@ Since we moved the `polls` directory out of the project, it’s no longer workin
     You don't need to run migration in this case because it already has the migrated tables. But if we would intall our package to a project that does not have the polls tables, we would need to run migrations.
 
 > [!Tip]Where's our polls app now?
-> To find our newly `django_polls`
+> To find our newly installed package, which is `django_polls` (although the distribution/project name is `django-polls`) run the following command:
+>
+> ```bash
+> python -c "import django_polls; print(django_polls.__file__)"
+> ```
+
+Publishing your app¶
+Now that we’ve packaged and tested django-polls, it’s ready to share with the world! If this wasn’t just an example, you could now:
+
+Email the package to a friend.
+
+Upload the package on your website.
+
+Post the package on a public repository, such as the Python Package Index (PyPI). There is a good tutorial for doing this.
