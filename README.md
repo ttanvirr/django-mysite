@@ -19,8 +19,8 @@
   - [3.2. Creating models](#32-creating-models)
   - [3.3. Activating models](#33-activating-models)
   - [3.4. Playing with the API](#34-playing-with-the-api)
-    - [3.4.0.1. Add custom method to model](#3401-add-custom-method-to-model)
-    - [3.4.0.2. Back to shell](#3402-back-to-shell)
+      - [3.4.0.1. Add custom method to model](#3401-add-custom-method-to-model)
+      - [3.4.0.2. Back to shell](#3402-back-to-shell)
   - [3.5. Introducing the Django Admin](#35-introducing-the-django-admin)
     - [3.5.1. Creating an admin user](#351-creating-an-admin-user)
     - [3.5.2. Start the development server](#352-start-the-development-server)
@@ -33,7 +33,7 @@
     - [3.6.3. Write views that actually do something](#363-write-views-that-actually-do-something)
       - [3.6.3.1. A shortcut: `render()`](#3631-a-shortcut-render)
     - [3.6.4. Raising a 404 error](#364-raising-a-404-error)
-      - [3.6.4.1. A shortcut: get_object_or_404()](#3641-a-shortcut-get_object_or_404)
+      - [3.6.4.1. A shortcut: get\_object\_or\_404()](#3641-a-shortcut-get_object_or_404)
     - [3.6.5. Use the template system](#365-use-the-template-system)
     - [3.6.6. Removing hardcoded URLs in templates](#366-removing-hardcoded-urls-in-templates)
     - [3.6.7. Namespacing URL names](#367-namespacing-url-names)
@@ -86,6 +86,7 @@
     - [3.13.3. Installing some prerequisites](#3133-installing-some-prerequisites)
     - [3.13.4. Packaging your app](#3134-packaging-your-app)
     - [3.13.5. Using your own package](#3135-using-your-own-package)
+    - [3.13.6. Publishing your app](#3136-publishing-your-app)
 
 # 1. Run the existing project
 
@@ -2324,11 +2325,10 @@ Since we moved the `polls` directory out of the project, it’s no longer workin
 > python -c "import django_polls; print(django_polls.__file__)"
 > ```
 
-Publishing your app¶
-Now that we’ve packaged and tested django-polls, it’s ready to share with the world! If this wasn’t just an example, you could now:
+### 3.13.6. Publishing your app
 
-Email the package to a friend.
+Now that we’ve packaged and tested `django-polls`, it’s ready to share with the world! You can now:
 
-Upload the package on your website.
-
-Post the package on a public repository, such as the Python Package Index (PyPI). There is a good tutorial for doing this.
+- Email the package to a friend (just need the `.tar.gz` file).
+- Upload the package on your website.
+- Post the package on a public repository, such as the `Python Package Index (PyPI)`. There is a [good tutorial](https://tinyurl.com/ymwsae4t) for doing this.
